@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>聊天机器人</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" type="text/css" th:href="@{/font_Icon/iconfont.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/chat.css}">
+    <script th:src="@{https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js}"></script>
+</head>
+<body style="text-align:center">
+
+<div class="chatContainer">
+    <div class="chatBtn">
+        <i class="iconfont icon-xiaoxi1"></i>
+    </div>
+    <div class="chat-message-num"></div>
+    <div class="chatBox" ref="chatBox">
+        <div class="chatBox-head">
+            <div class="chatBox-head-one">
+                智能聊天机器人
+                <div class="chat-close" style="margin: 10px 10px 0 0;font-size: 14px">关闭</div>
+            </div>
+            <div class="chatBox-head-two">
+                <div class="chat-return">返回</div>
+                <div class="chat-people">
+                    <div class="ChatInfoHead">
+                        <img src="" alt="头像"/>
+                    </div>
+                    <div class="ChatInfoName">这是用户的名字，看看名字到底能有多长</div>
+                </div>
+                <div class="chat-close">关闭</div>
+            </div>
+        </div>
+        <div class="chatBox-info">
+            <div class="chatBox-list" ref="chatBoxlist">
+                <div class="chat-list-people">
+                    <div><img th:src="@{img/icon01.png}" alt="头像"/></div>
+                    <div class="chat-name">
+                        <p>机器人</p>
+                    </div>
+                    <div class="message-num">聊天</div>
+                </div>
+            </div>
+            <div class="chatBox-kuang" ref="chatBoxkuang">
+                <div class="chatBox-content">
+                    <div class="chatBox-content-demo" id="chatBox-content-demo">
+
+                        <div class="clearfloat">
+                            <div class="author-name">
+                                <small class="chat-date" id="systime">2021-6-9 10:26:45</small>
+                            </div>
+                            <div class="left">
+                                <div class="chat-avatars"><img th:src="@{img/icon01.png}" alt="头像"/></div>
+                                <div class="chat-message">
+                                    你好！我们一起聊天吧！
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chatBox-send">
+                    <div class="div-textarea"></div>
+                    <div>
+                        <button id="chat-fasong" class="btn-default-styles"><i class="iconfont icon-fasong"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{http://www.jq22.com/jquery/jquery-1.10.2.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+    function timenow() {
+        var myDate = new Date();
+        var times = myDate.toLocaleString( );
+        return times
+    }
+
+    document.getElementById('systime').innerHTML = timenow();
+    screenFuc();
+    function screenFuc() {
+        var topHeight = $(".chatBox-head").innerHeight();//聊天头部高度
+        //屏幕小于768px时候,布局change
+        var winWidth = $(window).innerWidth();
+        if (winWidth <= 768) {
+            var totalHeight = $(window).height(); //页面整体高度
+            $(".chatBox-info").css("height", totalHeight - topHeight);
+            var infoHeight = $(".chatBox-info").innerHeight();//聊天头部以下高度
+            //中间内容高度
+            $(".chatBox-content").css("height", infoHeight - 46);
+            $(".chatBox-content-demo").css("height", infoHeight - 46);
+
+            $(".chatBox-list").css("height", totalHeight - topHeight);
+            $(".chatBox-kuang").css("height", totalHeight - topHeight);
+            $(".div-textarea").css("width", winWidth - 106);
+        } else {
+            $(".chatBox-info").css("height", 495);
+            $(".chatBox-content").css("height", 448);
+            $(".chatBox-content-demo").css("height", 448);
+            $(".chatBox-list").css("height", 495);
+            $(".chatBox-kuang").css("height", 495);
+            $(".div-textarea").css("width", 260);
+        }
+    }
+    (window.onresize = function () {
+        screenFuc();
+    })();
+    //未读信息数量为空时
+    var totalNum = $(".chat-message-num").html();
+    if (totalNum === "") {
+        $(".chat-message-num").css("padding", 0);
+    }
+    $(".message-num").each(function () {
+        var wdNum = $(this).html();
+        if (wdNum === "") {
+            $(this).css("padding", 0);
+        }
+    });
+
+
+    //打开/关闭聊天框
+    $(".chatBtn").click(function () {
+        $(".chatBox").toggle(10);
+    })
+    $(".chat-close").click(function () {
+        $(".chatBox").toggle(10);
+    })
+    //进聊天页面
+    $(".chat-list-people").each(function () {
+        $(this).click(function () {
+            var n = $(this).index();
+            $(".chatBox-head-one").toggle();
+            $(".chatBox-head-two").toggle();
+            $(".chatBox-list").fadeToggle();
+            $(".chatBox-kuang").fadeToggle();
+
+            //传名字
+            $(".ChatInfoName").text($(this).children(".chat-name").children("p").eq(0).html());
+
+            //传头像
+            $(".ChatInfoHead>img").attr("src", $(this).children().eq(0).children("img").attr("src"));
+
+            //聊天框默认最底部
+            $(document).ready(function () {
+                $("#chatBox-content-demo").scrollTop($("#chatBox-content-demo")[0].scrollHeight);
+            });
+        })
+    });
+
+    //返回列表
+    $(".chat-return").click(function () {
+        $(".chatBox-head-one").toggle(1);
+        $(".chatBox-head-two").toggle(1);
+        $(".chatBox-list").fadeToggle(1);
+        $(".chatBox-kuang").fadeToggle(1);
+    });
+
+    //点击发送按钮发送信息
+    $("#chat-fasong").click(function () {
+        var textContent = $(".div-textarea").html().replace(/[\n\r]/g, '<br>');
+        if (textContent !== "") {
+            $(".chatBox-content-demo").append("<div class=\"clearfloat\">" +
+                "<div class=\"author-name\"><small class=\"chat-date\" id=\"timenow\"></small> </div> " +
+                "<div class=\"right\"> <div class=\"chat-message\"> " +  textContent + " </div> " +
+                "<div class=\"chat-avatars\"><img src=\"img/icon02.png\" alt=\"头像\" /></div> </div> </div>");
+            //发送后清空输入框
+            $(".div-textarea").html("");
+            //聊天框默认最底部
+            $(document).ready(function () {
+                $("#chatBox-content-demo").scrollTop($("#chatBox-content-demo")[0].scrollHeight);
+            });
+            document.getElementById('timenow').innerHTML = timenow();
+
+            // console.log("httpRequestUrl",httpRequestUrl);
+
+            //机器人回复
+            $.post([[${#httpServletRequest.getContextPath()}]]+ "/robot",
+                {
+                    userInputText: textContent
+                },
+                function (data) {
+                    // console.log( data)
+                    reply(data);
+                });
+        }
+    });
+
+    //按enter键发送信息
+    $(function () {
+        document.onkeydown = function (event) {
+            var e = event || window.event || arguments.callee.caller.arguments[0];
+            if (e && e.keyCode === 13) {
+                var textContent = $(".div-textarea").html().replace(/[\n\r]/g, '<br>');
+
+                if (textContent !== "") {
+                    $(".chatBox-content-demo").append("<div class=\"clearfloat\">" +
+                        "<div class=\"author-name\"><small class=\"chat-date\" id=\"timenow\"></small> </div> " +
+                        "<div class=\"right\"> <div class=\"chat-message\"> " + textContent + " </div> " +
+                        "<div class=\"chat-avatars\"><img src=\"img/icon02.png\" alt=\"头像\" /></div> </div> </div>");
+                    //发送后清空输入框
+                    $(".div-textarea").html("");
+                    //聊天框默认最底部
+                    $(document).ready(function () {
+                        $("#chatBox-content-demo").scrollTop($("#chatBox-content-demo")[0].scrollHeight);
+                    });
+                    document.getElementById('timenow').innerHTML = timenow();
+
+                    //机器人回复
+                    $.post([[${#httpServletRequest.getContextPath()}]]+ "/robot",
+                        {
+                            userInputText: textContent
+                        },
+                        function (data) {
+                            // console.log( data)
+                            reply(data);
+                        });
+                }
+                //解决回车换行问题
+                event.returnValue = false;
+                return false;
+            }
+        };
+    });
+
+    //自动回复
+    function reply(textContent) {
+        if (textContent !== "") {
+            $(".chatBox-content-demo").append("<div class=\"clearfloat\">" +
+                "<div class=\"author-name\"><small class=\"chat-date\" id=\"timenow\"></small> </div> " +
+                "<div class=\"left\"><div class=\"chat-avatars\"><img src=\"img/icon01.png\" alt=\"头像\" /></div>  " +
+                "<div class=\"chat-message\"> " + textContent + " </div> </div> </div>");
+            //聊天框默认最底部
+            $(document).ready(function () {
+                $("#chatBox-content-demo").scrollTop($("#chatBox-content-demo")[0].scrollHeight);
+            });
+            document.getElementById('timenow').innerHTML = timenow();
+        }
+    }
+
+</script>
+
+</body>
+</html>
