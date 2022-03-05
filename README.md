@@ -23,7 +23,7 @@
 
 #### 预览效果
 
-[人机对话](http://robot.lukeewin.top)
+[人机对话](http://www.lukeewin.top:8080)
 
 
 #### 特技
