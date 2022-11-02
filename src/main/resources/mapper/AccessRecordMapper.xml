@@ -1,0 +1,19 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.lukeewin.robot.dao.AccessRecordDao">
+
+    <!-- 添加用户访问信息 -->
+    <insert id="addUserAccessInfo">
+        insert into access_record(count, access_ip, access_device, access_time)
+        values(#{count}, #{accessIp}, #{accessDevice}, now())
+    </insert>
+
+    <!-- 查询累计访问人数 -->
+    <select id="showAccessNumber" resultType="AccessRecord">
+        select id, count, access_ip, access_device, access_time
+        from access_record
+        order by count desc
+        limit 1
+    </select>
+</mapper>

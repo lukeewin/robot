@@ -5,11 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" type="text/css" th:href="@{/banniang/css/pio.css}">
+    <script th:src="@{/banniang/js/pio.js}"></script>
+    <script th:src="@{/banniang/js/l2d.js}"></script>
     <link rel="stylesheet" type="text/css" th:href="@{/font_Icon/iconfont.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/css/chat.css}">
     <script th:src="@{https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js}"></script>
 </head>
 <body style="text-align:center">
+
+<header>
+    <span id="visitorNumber"></span>
+    <span id="count"></span>
+    <span id="onlineCount"></span>
+</header>
+
+<div class="pio-container left">
+    <div class="pio-action"></div>
+    <canvas id="pio" width="200" height="250"></canvas>
+</div>
 
 <div class="chatContainer">
     <div class="chatBtn">
@@ -36,7 +50,7 @@
         <div class="chatBox-info">
             <div class="chatBox-list" ref="chatBoxlist">
                 <div class="chat-list-people">
-                    <div><img th:src="@{img/icon01.png}" alt="头像"/></div>
+                    <div><img th:src="@{img/robot.png}" alt="头像"/></div>
                     <div class="chat-name">
                         <p>机器人</p>
                     </div>
@@ -52,7 +66,7 @@
                                 <small class="chat-date" id="systime">2021-6-9 10:26:45</small>
                             </div>
                             <div class="left">
-                                <div class="chat-avatars"><img th:src="@{img/icon01.png}" alt="头像"/></div>
+                                <div class="chat-avatars"><img th:src="@{/img/robot.png}" alt="头像"/></div>
                                 <div class="chat-message">
                                     你好！我们一起聊天吧！
                                 </div>
@@ -96,14 +110,15 @@
 
             $(".chatBox-list").css("height", totalHeight - topHeight);
             $(".chatBox-kuang").css("height", totalHeight - topHeight);
-            $(".div-textarea").css("width", winWidth - 106);
+            $(".div-textarea").width(winWidth - 50);
         } else {
             $(".chatBox-info").css("height", 495);
             $(".chatBox-content").css("height", 448);
             $(".chatBox-content-demo").css("height", 448);
             $(".chatBox-list").css("height", 495);
             $(".chatBox-kuang").css("height", 495);
-            $(".div-textarea").css("width", 260);
+            $(".chat-fasong").css("width", 260);
+            $(".div-textarea").width(900);
         }
     }
     (window.onresize = function () {
@@ -125,10 +140,10 @@
     //打开/关闭聊天框
     $(".chatBtn").click(function () {
         $(".chatBox").toggle(10);
-    })
+    });
     $(".chat-close").click(function () {
         $(".chatBox").toggle(10);
-    })
+    });
     //进聊天页面
     $(".chat-list-people").each(function () {
         $(this).click(function () {
@@ -166,7 +181,7 @@
             $(".chatBox-content-demo").append("<div class=\"clearfloat\">" +
                 "<div class=\"author-name\"><small class=\"chat-date\" id=\"timenow\"></small> </div> " +
                 "<div class=\"right\"> <div class=\"chat-message\"> " +  textContent + " </div> " +
-                "<div class=\"chat-avatars\"><img src=\"img/icon02.png\" alt=\"头像\" /></div> </div> </div>");
+                "<div class=\"chat-avatars\"><img src=\"img/client.png\" alt=\"头像\" /></div> </div> </div>");
             //发送后清空输入框
             $(".div-textarea").html("");
             //聊天框默认最底部
@@ -189,8 +204,10 @@
         }
     });
 
-    //按enter键发送信息
     $(function () {
+        visitorNumber(); // 统计累计访问人数
+        count(); // 统计每天接口调用次数
+        //按enter键发送信息
         document.onkeydown = function (event) {
             var e = event || window.event || arguments.callee.caller.arguments[0];
             if (e && e.keyCode === 13) {
@@ -200,7 +217,7 @@
                     $(".chatBox-content-demo").append("<div class=\"clearfloat\">" +
                         "<div class=\"author-name\"><small class=\"chat-date\" id=\"timenow\"></small> </div> " +
                         "<div class=\"right\"> <div class=\"chat-message\"> " + textContent + " </div> " +
-                        "<div class=\"chat-avatars\"><img src=\"img/icon02.png\" alt=\"头像\" /></div> </div> </div>");
+                        "<div class=\"chat-avatars\"><img src=\"img/client.png\" alt=\"头像\" /></div> </div> </div>");
                     //发送后清空输入框
                     $(".div-textarea").html("");
                     //聊天框默认最底部
@@ -216,7 +233,11 @@
                         },
                         function (data) {
                             // console.log( data)
-                            reply(data);
+                            if (data.code === 200) {
+                                reply(data.data);
+                            } else {
+                                reply("服务器内部错误");
+                            }
                         });
                 }
                 //解决回车换行问题
@@ -228,10 +249,11 @@
 
     //自动回复
     function reply(textContent) {
+        count(); // 统计每天接口调用次数
         if (textContent !== "") {
             $(".chatBox-content-demo").append("<div class=\"clearfloat\">" +
                 "<div class=\"author-name\"><small class=\"chat-date\" id=\"timenow\"></small> </div> " +
-                "<div class=\"left\"><div class=\"chat-avatars\"><img src=\"img/icon01.png\" alt=\"头像\" /></div>  " +
+                "<div class=\"left\"><div class=\"chat-avatars\"><img src=\"img/robot.png\" alt=\"头像\" /></div>  " +
                 "<div class=\"chat-message\"> " + textContent + " </div> </div> </div>");
             //聊天框默认最底部
             $(document).ready(function () {
@@ -241,6 +263,70 @@
         }
     }
 
+    // 统计累计访问人数和每天接口调用次数
+    function visitorNumber() {
+        // 统计累计访问人数
+        $.get([[${#httpServletRequest.getContextPath()}]]+ "/visitorNumber", function (data) {
+            if (data.code === 200) {
+                $("#visitorNumber").text("累计访问人数: " + data.data);
+            }
+        });
+    }
+
+    function count() {
+        // 记录接口请求次数
+        $.get([[${#httpServletRequest.getContextPath()}]]+ "/count", function (data) {
+            if (data.code === 200) {
+                $("#count").text("每天接口调用次数: " + data.data);
+            }
+        });
+    }
+
+</script>
+
+<!-- 看板娘 -->
+<script>
+    var pio = new Paul_Pio({
+        "mode": "fixed",
+        "tips": true,
+        "hidden": true,
+        "content": {
+            "welcome": ["欢迎来到Luke Ewin的聊天机器人项目！", "博主每天都有些折腾记录，欢迎前往他的小窝阅读~"],
+        },
+        "model": [
+            "banniang/live2d-widget-models/live2d-widget-model-miku/assets/miku.model.json", //初音
+            "banniang/live2d-widget-models/live2d-widget-model-shizuku/assets/shizuku.model.json",// 萌娘
+            "banniang/live2d-widget-models/live2d-widget-model-chitose/assets/chitose.model.json",
+            "banniang/live2d-widget-models/live2d-widget-model-koharu/assets/koharu.model.json",
+            "banniang/live2d-widget-models/live2d-widget-model-haru/01/assets/haru01.model.json",
+            "banniang/live2d-widget-models/live2d-widget-model-wanko/assets/wanko.model.json",
+            "banniang/live2d-widget-models/live2d-widget-model-vert/vert_classic/vert_classic.model.json",
+            "banniang/live2d-widget-models/live2d-widget-model-nepgear_extra/nepgear_extra/nepgear_extra.model.json",
+            "banniang/live2d-widget-models/live2d-widget-model-haruto/assets/haruto.model.json",
+            "banniang/live2d-widget-models/live2d-widget-model-haru/02/assets/haru02.model.json",
+            "banniang/live2d-widget-models/live2d-widget-model-histoire/histoire/histoire.model.json",
+            "banniang/live2d-widget-models/live2d-widget-model-blanc_normal/blanc_normal/blanc_normal.model.json",
+        ]
+    });
+</script>
+
+<!-- 统计实时在线人数 -->
+<script type="text/javascript">
+   var url = "ws://localhost:80/onlineCount";
+   // 判断当前用户的浏览器是否支持websocket
+   if ('WebSocket' in window) {
+       onlineCount = new WebSocket(url);
+       // 接收到消息的回调方法
+       onlineCount.onmessage = function(event){
+           setMessageInnerHTML(event.data);
+       };
+       // 将消息显示在网页上
+       function setMessageInnerHTML(message){
+           $("#onlineCount").text('实时在线人数：' + message);
+       }
+   } else {
+       alert("你的浏览器不支持WebSocket");
+   }
 </script>
 
 </body>

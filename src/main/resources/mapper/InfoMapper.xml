@@ -1,0 +1,18 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.lukeewin.robot.dao.InfoDao">
+
+    <insert id="addCount">
+        insert into info(count, access_time) values(#{count}, now())
+    </insert>
+
+    <!-- 统计每天调用接口次数 -->
+    <select id="findCount" resultType="Info">
+        select id, count, access_time
+        from info
+        where date_format(access_time, "%Y-%m-%d") = date_format(now(), "%Y-%m-%d")
+        order by count desc
+        limit 1;
+    </select>
+</mapper>
