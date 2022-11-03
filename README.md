@@ -1,5 +1,5 @@
 # robot
-这是一个人机对话的项目
+这是一个人机对话的项目。
 
 这个项目是基于SpringBoot和Thymeleaf开发的项目。
 
