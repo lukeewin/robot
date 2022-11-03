@@ -15,4 +15,4 @@
 
 #### 使用说明
 
-1.  需要注意项目中使用到了第三方接口，即图灵接口，这个需要自己去图灵官方申请apikey，把该key写入到application.yml文件中的apiKey中。
+1.  需要注意项目中使用到了第三方接口，即图灵接口，这个需要自己去图灵官方申请apikey，把该key写入到application-dev.yml文件中的apiKey中。
