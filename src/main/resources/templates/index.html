@@ -312,7 +312,8 @@
 
 <!-- 统计实时在线人数 -->
 <script type="text/javascript">
-   var url = "ws://localhost:80/onlineCount";
+   var url = "ws://" + window.location.host + "/onlineCount";
+   console.log(url);
    // 判断当前用户的浏览器是否支持websocket
    if ('WebSocket' in window) {
        onlineCount = new WebSocket(url);
