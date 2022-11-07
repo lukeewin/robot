@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/robot?serverTimezone=Asia/Shanghai
+    username: root
+    password:
+
+turing:
+  url: http://openapi.turingapi.com/openapi/api/v2
+  apiKey:
+  userId: 1
+  requestType: 0 # 请求类型 0 表示文本类型
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: top.lukeewin.robot.entity
